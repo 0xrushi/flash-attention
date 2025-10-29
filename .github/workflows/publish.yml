@@ -8,6 +8,9 @@
 name: Build wheels and deploy
 
 on:
+  push:
+    branches:
+      - fix/*
   create:
     tags:
       - v*
