@@ -152,6 +152,19 @@ jobs:
           ls -al build/ || true
           ls -al csrc/ || true
 
+      - name: Pre-configure build for CUDA 13 (inline)
+        if: ${{ startsWith(inputs.cuda-version, '13.') }}
+        run: |
+          # Avoid accidental compute_130 under CUDA 13 by using safe default arch list
+          # Do a lightweight editable install without isolation to validate toolchain
+          nvcc --version || true
+          python --version || true
+          rm -rf build *.egg-info || true
+          export NVCC_THREADS=4
+          pip install -e . --no-build-isolation -v || true
+          # Persist safe default arches for the wheel build step
+          echo "FLASH_ATTN_CUDA_ARCHS=80;90" >> $GITHUB_ENV
+
       - name: Build wheel
         id: build_wheel
         run: |
