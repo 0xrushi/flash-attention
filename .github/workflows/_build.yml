@@ -165,6 +165,14 @@ jobs:
           # Persist safe default arches for the wheel build step
           echo "FLASH_ATTN_CUDA_ARCHS=80;90" >> $GITHUB_ENV
 
+      - name: Pre-configure arches for CUDA < 12.8
+        if: ${{ startsWith(inputs.cuda-version, '12.') }}
+        run: |
+          # Compute_120 is unsupported on CUDA 12.6 runners; restrict arches to 80/90
+          if [ "${MATRIX_CUDA_VERSION}" -lt 128 ]; then
+            echo "FLASH_ATTN_CUDA_ARCHS=80;90" >> $GITHUB_ENV
+          fi
+
       - name: Build wheel
         id: build_wheel
         run: |
