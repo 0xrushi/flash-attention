@@ -34,6 +34,7 @@ jobs:
 
   build_wheels:
     name: Build Wheel
+    if: startsWith(github.ref_name, 'v')
     needs: setup_release
     strategy:
       fail-fast: false
@@ -64,8 +65,32 @@ jobs:
       release-version: ${{ needs.setup_release.outputs.release-version }}
       upload-to-release: true
 
+  # Reduced matrix for temporary CI tags to stay under 256 combinations
+  build_wheels_temp:
+    name: Build Wheel (temp)
+    if: startsWith(github.ref_name, 'temp-ci-')
+    needs: setup_release
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04]
+        python-version: ["3.12"]
+        torch-version: ["2.6.0"]
+        cuda-version: ["13.0.0"]
+        cxx11_abi: ["FALSE"]
+    uses: ./.github/workflows/_build.yml
+    with:
+      runs-on: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
+      cuda-version: ${{ matrix.cuda-version }}
+      torch-version: ${{ matrix.torch-version }}
+      cxx11_abi: ${{ matrix.cxx11_abi }}
+      release-version: ${{ needs.setup_release.outputs.release-version }}
+      upload-to-release: true
+
   publish_package:
     name: Publish package
+    if: startsWith(github.ref_name, 'v')
     needs: [build_wheels]
     runs-on: ubuntu-latest
     steps:
