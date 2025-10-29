@@ -55,6 +55,17 @@ jobs:
           # Pytorch < 2.5 does not support Python 3.13
           - torch-version: "2.4.0"
             python-version: "3.13"
+          # Limit CUDA 13 builds to torch releases that publish cu130 wheels
+          - torch-version: "2.4.0"
+            cuda-version: "13.0.0"
+          - torch-version: "2.5.1"
+            cuda-version: "13.0.0"
+          - torch-version: "2.6.0"
+            cuda-version: "13.0.0"
+          - torch-version: "2.7.1"
+            cuda-version: "13.0.0"
+          - torch-version: "2.8.0"
+            cuda-version: "13.0.0"
     uses: ./.github/workflows/_build.yml
     with:
       runs-on: ${{ matrix.os }}
@@ -76,7 +87,7 @@ jobs:
         os: [ubuntu-22.04]
         python-version: ["3.12"]
         torch-version: ["2.6.0"]
-        cuda-version: ["13.0.0"]
+        cuda-version: ["12.6.0"]
         cxx11_abi: ["FALSE"]
     uses: ./.github/workflows/_build.yml
     with:
